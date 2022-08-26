@@ -11,27 +11,29 @@ todos = [
 ]
 
 
-@app.route('/todos', methods=['GET'])
-def hello_world():
-    json_text = jsonify(todos)
+@app.route('/todos', methods=['GET', 'POST'])
+def handle_todos():
 
-    return json_text
+    if request.method == 'GET':
+        json_text = jsonify(todos)
 
+        return json_text
 
-@app.route('/todos', methods=['POST'])
-def add_new_todo():
+    elif request.method == 'POST':
+        request_body = json.loads(request.data)
+        todos.append(request_body)
+        json_todos = jsonify(todos)
 
-    request_body = json.loads(request.data)
-    todos.append(request_body)
-    json_todos = jsonify(todos)
+        return json_todos
 
-    return json_todos
+    return ({'msg': f'Bad request. ${request.method} is not avaliable'}, 400)
 
 
 @app.route('/todos/<int:position>', methods=['DELETE'])
 def delete_todo(position):
     todos.pop(position)
     json_text = jsonify(todos)
+
     return json_text
 
 
